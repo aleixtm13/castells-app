@@ -1,5 +1,10 @@
+
+stages:
+  - build
+  - deploy
+
 build:
-  image: node:14.15.3-buster-slim
+  image: node:16.7.13-buster-slim
   stage: build
   script:
     - yarn install
@@ -7,3 +12,18 @@ build:
   artifacts:
     paths:
       - build/
+
+pages:
+  image: alpine:latest
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none # Do not clone git repo
+    NODE_ENV: production
+    PUBLIC_URL: http://castells-app.garrick.monster
+  script:
+    # Rename the CRA `build` folder to `public`
+    - mv build public
+    - cp public/index.html public/404.html
+  artifacts:
+    paths:
+      - public
